@@ -23,34 +23,12 @@ input <- read_csv(here('2021', 'd3_input.txt'),
 
 #---- solution ----
 output <- function(d) {
-  # 0-pad the beginning to the maximum length
   max_len <- max(nchar(d$diag))
-  
-  zero_pad <- function(string, max_len) {
-    if (nchar(string) < max_len) {
-      pad <- str_c(rep("0",
-                       max_len - nchar(string)),
-                   collapse = "")
-      string <- paste0(pad, string)
-    }
-    
-    return(string)
-  }
-  
-  d <- d %>%
-    rowwise() %>%
-    mutate(diag = case_when(
-      nchar(diag) < max_len ~ zero_pad(diag, max_len),
-      TRUE ~ diag
-    ))
-  
-  print(head(d))
   
   cols <- letters[1:max_len]
   
   counts <- d %>%
     separate(diag, into = cols, sep = "(?<=.)") %>%
-    #mutate_all(as.numeric) %>%
     pivot_longer(cols = everything()) %>%
     group_by(name, value) %>%
     summarize(n = n()) %>%

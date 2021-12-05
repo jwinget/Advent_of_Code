@@ -28,11 +28,11 @@ parse_input <- function(path) {
 example <- parse_input(here("2021", "d5_example.txt"))
 input <- parse_input(here("2021", "d5_input.txt"))
 
-find_danger <- function(vecs) {
+find_danger <- function(vecs, diag = FALSE) {
   danger_points <- vecs %>%
     group_by(vent_line) %>%
     # Just keep vertical or horizontal lines
-    filter(x1 == x2 | y1 == y2) %>%
+    filter(if (diag == FALSE) x1 == x2 | y1 == y2 else TRUE) %>%
     # Compute all x & y points each line passes through
     mutate(x_coords = list(seq(from = x1, to = x2)),
            y_coords = list(seq(from = y1, to = y2))) %>%
@@ -54,3 +54,8 @@ find_danger(input)
 # 4993, right on the first try :)
 
 #---- part 2 ----
+# Just set diag = TRUE
+find_danger(example, diag = TRUE)
+
+find_danger(input, diag = TRUE)
+# 21101 is correct.

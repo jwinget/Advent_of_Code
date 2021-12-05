@@ -36,7 +36,7 @@ input <- parse_input(here("2021", "d4_input.txt"))
 head(input$boards)
 tail(input$boards)
 
-find_winner <- function(draws, boards) {
+find_winner <- function(draws, boards, n = -1) {
   # Find the turn each value will be drawn on
   draw_df <- tibble(value = draws) %>%
     rownames_to_column(var = "draw_turn") %>%
@@ -55,7 +55,7 @@ find_winner <- function(draws, boards) {
     mutate(win_turn = min(row_win, col_win)) %>%
     ungroup() %>%
     #select(-row_win, -col_win, -row, -column, -board) %>%
-    top_n(-1, wt = win_turn)
+    top_n(n, wt = win_turn)
   
   View(winning_board)
   
@@ -76,3 +76,6 @@ find_winner <- function(draws, boards) {
 
 find_winner(input$draws, input$boards)
 # 8136 is correct
+
+#---- part 2 ----
+find_winner(input$draws, input$boards, n = 1)

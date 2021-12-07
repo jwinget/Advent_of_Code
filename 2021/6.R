@@ -55,5 +55,6 @@ breed_fish(ie, 80)
 ii <- init_data(input)
 breed_fish(ii, 80)
 
-breed_fish(ii, 256) %>%
-  print(digits = 12)
+system.time(breed_fish(ii, 256) %>%
+  print(digits = 12))
+# 1.28 seconds elapsed :)

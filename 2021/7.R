@@ -33,31 +33,29 @@ fuel_cost(input)
 rising_cost <- function(d) {
   # I think now the cheapest is close to the mean instead
   # But it's not quite that easy...
-  # Need to figure out if there are more entries to one side of the mean
+  # Just check the integer on either side of the mean
+  # and take the min
   
-  if (length(d[d > mean(d)]) < length(d[d < mean(d)])) {
-    # More on the high end, use ceiling
-    target_pos <- ceiling(mean(d))
-  } else {
-    # More on the lower end, use floor
-    target_pos <- floor(mean(d))
+  target_pos <- c(ceiling(mean(d)),
+                  floor(mean(d)))
+  
+  fuel_sum <- function(d, target_pos) {
+    res <- tibble(pos = d, target_pos = target_pos) %>%
+      rowwise() %>%
+      mutate(cost = case_when(
+        # Also need to update the cost calculation
+        pos >= target_pos ~ sum(seq(from = 1,
+                                  to = pos - target_pos)),
+        pos < target_pos ~ sum(seq(from = 1,
+                                 to = abs(pos - target_pos)))
+      ))
+
+    res %>%
+      pull(cost) %>%
+      sum()
   }
   
-  print(target_pos)
-
-  res <- tibble(pos = d, target_pos = target_pos) %>%
-    rowwise() %>%
-    mutate(cost = case_when(
-      # Also need to update the cost calculation
-      pos >= target_pos ~ sum(seq(from = 1,
-                                  to = pos - target_pos)),
-      pos < target_pos ~ sum(seq(from = 1,
-                                 to = abs(pos - target_pos)))
-    ))
-
-  res %>%
-    pull(cost) %>%
-    sum()
+  min(unlist(map(target_pos, ~fuel_sum(d, .x))))
 }
 
 rising_cost(example)
